@@ -88,7 +88,7 @@ export default function AttendancePage() {
           )}
           <Button
             variant={clockedIn ? "danger" : "success"}
-            onClick={clockedIn ? clockOut : clockIn}
+            onClick={clockedIn ? clockOut : () => clockIn()}
             disabled={!!todayRecord?.clockOut}
             data-testid={clockedIn ? "clock-out-btn" : "clock-in-btn"}
           >
