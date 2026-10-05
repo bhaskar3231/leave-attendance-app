@@ -1,9 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // session.ts uses jose which pulls in Node.js crypto APIs.
-  // Marking as external prevents the Edge Runtime bundler from processing it.
+  // jose + bcryptjs use Node.js crypto APIs — keep them server-side only.
   serverExternalPackages: ["jose", "bcryptjs"],
   experimental: {},
+
+  // Suppress the Edge Runtime warning for jose's JWE compression helpers.
+  // session.ts is never imported by middleware (we use sessionEdge.ts there).
+  webpack(config, { isServer }) {
+    if (!isServer) return config;
+    // Tell webpack to treat jose's webapi deflate as an external so the
+    // CompressionStream / DecompressionStream warnings don't fire.
+    config.externals = [...(config.externals ?? []), "jose"];
+    return config;
+  },
 
   // ─── Security Headers ─────────────────────────────────────────────────────
   // Applied to every route. Covers OWASP Top-10 HTTP header recommendations.
