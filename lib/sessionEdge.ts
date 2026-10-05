@@ -1,7 +1,7 @@
-// Edge-compatible JWT verify — no Node.js-only APIs.
-// Uses the universal jose build (works in both Edge and Node runtimes).
+// Edge-compatible JWT verify — imports only the jwt/verify subpath of jose
+// which has no Node.js-only dependencies (no CompressionStream/DecompressionStream).
 
-import { jwtVerify } from "jose";
+import { jwtVerify } from "jose/jwt/verify";
 import type { SessionPayload } from "./authTypes";
 
 function getEdgeSecret(): Uint8Array {

@@ -1,18 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // jose + bcryptjs use Node.js crypto APIs — keep them server-side only.
-  serverExternalPackages: ["jose", "bcryptjs"],
+  // bcryptjs + jose use Node.js crypto APIs in API routes (session.ts).
+  // sessionEdge.ts uses jose/jwt/verify subpath — no Node.js-only deps — safe for Edge.
+  serverExternalPackages: ["bcryptjs", "jose"],
   experimental: {},
-
-  // Suppress the Edge Runtime warning for jose's JWE compression helpers.
-  // session.ts is never imported by middleware (we use sessionEdge.ts there).
-  webpack(config, { isServer }) {
-    if (!isServer) return config;
-    // Tell webpack to treat jose's webapi deflate as an external so the
-    // CompressionStream / DecompressionStream warnings don't fire.
-    config.externals = [...(config.externals ?? []), "jose"];
-    return config;
-  },
 
   // ─── Security Headers ─────────────────────────────────────────────────────
   // Applied to every route. Covers OWASP Top-10 HTTP header recommendations.
